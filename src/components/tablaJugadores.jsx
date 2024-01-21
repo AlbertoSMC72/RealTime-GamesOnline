@@ -9,22 +9,19 @@ function Jugadores() {
             { id_usuario: 1, nombre_usuario: 'Usuario1', record: '100' },
             { id_usuario: 2, nombre_usuario: 'Usuario2', record: '80' },
             { id_usuario: 3, nombre_usuario: 'Usuario3', record: '120' },
-            // ... otros datos de jugadores
         ];
 
-        // Ordenar la lista de jugadores por récord (de mayor a menor)
         const jugadoresOrdenados = datosJugadores.sort((a, b) => parseInt(b.record) - parseInt(a.record));
 
         setJugadores(jugadoresOrdenados);
     }, []);
 
     return (
-        <div>
+        <div style={{textAlign:"center",paddingLeft:"15px",paddingRight:"15px"}}>
             <h2>Top Jugadores</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>ID Usuario</th>
                         <th>Nombre Usuario</th>
                         <th>Récord</th>
                     </tr>
@@ -32,7 +29,6 @@ function Jugadores() {
                 <tbody>
                     {jugadores.map((jugador) => (
                         <tr key={jugador.id_usuario}>
-                            <td>{jugador.id_usuario}</td>
                             <td>{jugador.nombre_usuario}</td>
                             <td>{jugador.record}</td>
                         </tr>
