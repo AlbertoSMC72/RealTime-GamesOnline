@@ -1,17 +1,19 @@
 // eslint-disable-next-line no-unused-vars
-import { useState } from 'react'
-import User from './components/user'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Register from './pages/register.page';
+import PaginaJuego from './pages/game.page';
+import './App.css';
 
 function App() {
-
-
   return (
-    <>
-      <User />
-      
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/Register" element={<Register />} />
+        <Route path="/Game" element={<PaginaJuego />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
