@@ -1,5 +1,5 @@
 import Jugadores from '../components/tablaJugadores';
-import Tablero from '../components/tablero';  // Asegúrate de importar el componente correcto
+import Tablero from '../components/oxox.tablero';  // Asegúrate de importar el componente correcto
 import "./css/game.css"
 
 function PaginaJuego() {
