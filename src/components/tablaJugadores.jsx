@@ -1,23 +1,31 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function Jugadores() {
     const [jugadores, setJugadores] = useState([]);
 
-    useEffect(() => {
-        // Simulación de datos de jugadores (puedes cargarlos desde una API o base de datos)
-        const datosJugadores = [
-            { id_usuario: 1, nombre_usuario: 'Usuario1', record: '100' },
-            { id_usuario: 2, nombre_usuario: 'Usuario2', record: '80' },
-            { id_usuario: 3, nombre_usuario: 'Usuario3', record: '120' },
-        ];
+    const fetchUsers = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('http://localhost:8080/users/', { headers: { Authorization: `${token}` } });
+            setJugadores(response.data.users);
+        } catch (error) {
+            console.error('Error al obtener usuarios:', error);
+        }
+    };
 
-        const jugadoresOrdenados = datosJugadores.sort((a, b) => parseInt(b.record) - parseInt(a.record));
-
-        setJugadores(jugadoresOrdenados);
+    useEffect(() => {   
+        fetchUsers();
+        const intervalId = setInterval(() => {
+            fetchUsers();
+        }, 5000); // Intervalo de 5 segundos (ajusta según tus necesidades)
+        return () => clearInterval(intervalId);
     }, []);
 
+    const filteredJugadores = jugadores.filter(jugador => jugador.puntos > 0).sort((a, b) => b.puntos - a.puntos);
+
     return (
-        <div style={{textAlign:"center",paddingLeft:"15px",paddingRight:"15px"}}>
+        <div style={{ textAlign: "center", paddingLeft: "15px", paddingRight: "15px" }}>
             <h2>Top Jugadores</h2>
             <table>
                 <thead>
@@ -27,10 +35,10 @@ function Jugadores() {
                     </tr>
                 </thead>
                 <tbody>
-                    {jugadores.map((jugador) => (
-                        <tr key={jugador.id_usuario}>
-                            <td>{jugador.nombre_usuario}</td>
-                            <td>{jugador.record}</td>
+                    {Array.isArray(filteredJugadores) && filteredJugadores.map((jugador) => (
+                        <tr key={jugador._id}>
+                            <td>{jugador.name}</td>
+                            <td>{jugador.puntos}</td>
                         </tr>
                     ))}
                 </tbody>
