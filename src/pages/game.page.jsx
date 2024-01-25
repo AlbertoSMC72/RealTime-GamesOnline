@@ -1,5 +1,6 @@
 import Jugadores from '../components/tablaJugadores';
-import Oxox from '../components/oxox.tablero'; 
+/* import Oxox from '../components/oxox.tablero'; 
+ */import JuegoAdivinanza from '../components/adivina.tablero';
 import "./css/game.css"
 
 
@@ -10,8 +11,10 @@ function PaginaJuego() {
         <Jugadores />
       </div>
       <div className='game'>
-        <Oxox />
-      </div>
+{/*         <Oxox />
+ */}      
+ <JuegoAdivinanza/>
+ </div>
     </div>
   );
 }
