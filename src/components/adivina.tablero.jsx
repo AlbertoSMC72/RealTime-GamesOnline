@@ -1,145 +1,77 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-const JuegoAdivinanza = () => {
-    const [modo, setModo] = useState('elegirRango');
-    const [rangoInicial, setRangoInicial] = useState(1);
-    const [rangoFinal, setRangoFinal] = useState(100);
-    const [numeroAdivinar, setNumeroAdivinar] = useState(null);
-    const [numeroAdivinanza, setNumeroAdivinanza] = useState(null);
-    const [intentos, setIntentos] = useState(0);
-    const [mensaje, setMensaje] = useState('');
-    const [mostrarRespuesta, setMostrarRespuesta] = useState(false);
+const App = () => {
+  const [targetNumber, setTargetNumber] = useState(null);
+  const [guessedNumber1, setGuessedNumber1] = useState('');
+  const [guessedNumber2, setGuessedNumber2] = useState('');
+  const [result1, setResult1] = useState('');
+  const [result2, setResult2] = useState('');
 
-    useEffect(() => {
-        if (mostrarRespuesta) {
-            const timeoutId = setTimeout(() => {
-                reiniciarJuego();
-                setMostrarRespuesta(false);
-            }, 5000);
+  const startGame = (chosenNumber) => {
+    if (chosenNumber < 1 || chosenNumber > 50) {
+      setResult1('Por favor, elige un número válido entre 1 y 50.');
+    } else {
+      setTargetNumber(chosenNumber);
+      setResult1('');
+    }
+  };
 
-            return () => clearTimeout(timeoutId);
-        }
-    }, [mostrarRespuesta]);
+  const restartGame = () => {
+    setTargetNumber(null);
+    setGuessedNumber1('');
+    setGuessedNumber2('');
+    setResult1('');
+    setResult2('');
+  };
 
-    const validarRangosYNumero = () => {
-        if (isNaN(rangoInicial) || isNaN(rangoFinal) || isNaN(numeroAdivinar)) {
-            setMensaje('Por favor, ingresa números válidos.');
-            return false;
-        }
 
-        if (rangoInicial < 1 || rangoInicial > 100 || rangoFinal < rangoInicial || rangoFinal > 100) {
-            setMensaje('Los rangos deben estar entre 1 y 100, y el rango final debe ser mayor o igual al rango inicial.');
-            return false;
-        }
+  const handleGuess2 = () => {
+    const guessed = parseInt(guessedNumber2, 10);
 
-        if (numeroAdivinar < rangoInicial || numeroAdivinar > rangoFinal) {
-            setMensaje('El número a adivinar debe estar dentro del rango seleccionado.');
-            return false;
-        }
+    if (isNaN(guessed) || guessed < 1 || guessed > 50) {
+      setResult2('Por favor, ingresa un número válido entre 1 y 50.');
+    } else if (guessed === targetNumber) {
+      setResult2('¡Adivinaste! El número correcto es ' + targetNumber);
+      setResult1('¡El Jugador 2 adivinó el número!');
+    } else if (guessed < targetNumber) {
+      setResult2('Número incorrecto. El número objetivo es mayor. ¡Sigue intentando!');
+    } else {
+      setResult2('Número incorrecto. El número objetivo es menor. ¡Sigue intentando!');
+    }
+  };
 
-        return true;
-    };
-
-    const iniciarJuego = () => {
-        if (validarRangosYNumero()) {
-            setModo('adivinarNumero');
-            reiniciarJuego();
-        }
-    };
-
-    const manejarAdivinanza = (numero) => {
-        setNumeroAdivinanza(numero);
-        setIntentos(intentos + 1);
-
-        if (numero === numeroAdivinar) {
-            setMensaje(`¡Felicidades! Adivinaste el número en ${intentos} intentos.`);
-            setModo('elegirRango');
-            setMostrarRespuesta(true);
-        } else {
-            const pista = numero < numeroAdivinar ? 'mayor' : 'menor';
-            setMensaje(`Incorrecto. El número es ${pista}. Intenta de nuevo.`);
-        }
-    };
-
-    const reiniciarJuego = () => {
-        setNumeroAdivinanza(null);
-        setIntentos(0);
-        setMensaje('');
-    };
-
-    const generarBotones = () => {
-        const botones = [];
-        for (let i = rangoInicial; i <= rangoFinal; i++) {
-            const botonSeleccionado = i === numeroAdivinanza;
-            const botonCorrecto = i === numeroAdivinar;
-
-            botones.push(
-                <button
-                    key={i}
-                    onClick={() => manejarAdivinanza(i)}
-                    style={{
-                        backgroundColor: mostrarRespuesta && botonCorrecto ? 'green' : mostrarRespuesta && botonSeleccionado ? 'gray' : 'white',
-                        color: mostrarRespuesta && (botonSeleccionado || botonCorrecto) ? 'white' : 'black',
-                        width: '40px',
-                        height: '40px',
-                        margin: '5px',
-                        fontSize: '16px',
-                        border: '1px solid #ccc',
-                        borderRadius: '5px',
-                        cursor: mostrarRespuesta ? 'not-allowed' : 'pointer',
-                    }}
-                >
-                    {i}
-                </button>
-            );
-        }
-        return botones;
-    };
-
-    return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>Juego de Adivinanzas para 2 Jugadores</h1>
-            {modo === 'elegirRango' && (
-                <>
-                    <p>Jugador 1: Elige un rango de números</p>
-                    <label>Rango Inicial:</label>
-                    <input
-                        type="number"
-                        value={rangoInicial}
-                        onChange={(e) => setRangoInicial(Math.max(1, Math.min(100, parseInt(e.target.value, 10))))}
-                        style={{ margin: '5px' }}
-                    />
-                    <label>Rango Final:</label>
-                    <input
-                        type="number"
-                        value={rangoFinal}
-                        onChange={(e) => setRangoFinal(Math.max(rangoInicial, Math.min(100, parseInt(e.target.value, 10))))}
-                        style={{ margin: '5px' }}
-                    />
-                    <p>Jugador 1: Elige el número a adivinar</p>
-                    <input
-                        type="number"
-                        value={numeroAdivinar}
-                        onChange={(e) =>
-                            setNumeroAdivinar(Math.max(rangoInicial, Math.min(rangoFinal, parseInt(e.target.value, 10))))
-                        }
-                        style={{ margin: '5px' }}
-                    />
-                    <button onClick={iniciarJuego} style={{ margin: '10px', padding: '10px 20px', fontSize: '16px' }}>
-                        Iniciar Juego
-                    </button>
-                </>
-            )}
-            {modo === 'adivinarNumero' && (
-                <>
-                    <p>Jugador 2: Selecciona el número</p>
-                    <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>{generarBotones()}</div>
-                    <p style={{ marginTop: '10px' }}>Intentos: {intentos}</p>
-                </>
-            )}
-            <p style={{ marginTop: '10px', fontSize: '18px', color: mostrarRespuesta ? 'green' : 'black' }}>{mensaje}</p>
-        </div>
-    );
+  return (
+    <div>
+      <h1>Adivina el Número</h1>
+      {targetNumber === null ? (
+        <>
+          <p>Jugador 1, elige un número entre 1 y 50:</p>
+          <input
+            type="number"
+            onChange={(e) => setGuessedNumber1(e.target.value)}
+          />
+          <button onClick={() => startGame(parseInt(guessedNumber1, 10))}>
+            Comenzar Juego
+          </button>
+          <p>{result1}</p>
+        </>
+      ) : (
+        <>
+          <div>
+            <p>Jugador 2, adivina el número:</p>
+            <input
+              type="number"
+              value={guessedNumber2}
+              onChange={(e) => setGuessedNumber2(e.target.value)}
+            />
+            <button onClick={handleGuess2}>Adivinar</button>
+            <p>{result2}</p>
+          </div>
+          <button onClick={restartGame}>Reiniciar Juego</button>
+        </>
+      )}
+    </div>
+  );
 };
 
-export default JuegoAdivinanza;
+export default App;

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { io } from "socket.io-client";  // npm install socket.io-client 
 
 const LoginCreateAccount = () => {
     const [name, setname] = useState("");
@@ -9,13 +8,6 @@ const LoginCreateAccount = () => {
     const [isCreatingAccount] = useState(false);
 
     const navigate = useNavigate();
-
-    const socket = io("http://localhost:8080", {
-        autoConnect: false,
-        query: {
-            token: localStorage.getItem("token"),
-        },
-    });    
 
     useEffect(() => {
         if (isLoggedIn) {
@@ -44,8 +36,8 @@ const LoginCreateAccount = () => {
                 saveTokenToLocalStorage(data.token);
                 setIsLoggedIn(true);
                 
-                socket.auth = { token: data.token };
-                socket.connect();
+/*                 socket.auth = { token: data.token };
+                socket.connect(); */
             }
         } catch (error) {
             console.error(error);
