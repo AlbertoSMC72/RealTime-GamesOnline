@@ -7,8 +7,8 @@ function Jugadores() {
     const fetchUsers = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8080/users/', { headers: { Authorization: `${token}` } });
-            setJugadores(response.data.users);
+            const response = await axios.get('http://localhost:3000/app/user/', { headers: { Authorization: `${token}` } });
+            setJugadores(response.data);
         } catch (error) {
             console.error('Error al obtener usuarios:', error);
         }
@@ -22,7 +22,7 @@ function Jugadores() {
         return () => clearInterval(intervalId);
     }, []);
 
-    const filteredJugadores = jugadores.filter(jugador => jugador.puntos > 0).sort((a, b) => b.puntos - a.puntos);
+    const filteredJugadores = jugadores.filter(jugador => jugador.record > 0).sort((a, b) => b.record - a.record);
 
     return (
         <div style={{ textAlign: "center", paddingLeft: "15px", paddingRight: "15px" }}>
@@ -36,10 +36,10 @@ function Jugadores() {
                 </thead>
                 <tbody>
                     {Array.isArray(filteredJugadores) && filteredJugadores.map((jugador) => (
-                        <tr key={jugador._id}>
-                            <td>{jugador.name}</td>
-                            <td>{jugador.puntos}</td>
-                        </tr>
+                        <tr key={jugador.id_usuario}>
+                            <td>{jugador.nombre_usuario}</td>
+                            <td>{jugador.record}</td>
+                        </tr>   
                     ))}
                 </tbody>
             </table>

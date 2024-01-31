@@ -1,116 +1,133 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import PropTypes from 'prop-types';
 
-const Board = () => {
-    const initialBoard = [
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-    ];
+const Oxox = ({ socket, roomId }) => {
+  const [board, setBoard] = useState(Array(3).fill(Array(3).fill("")));
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(null);
+  const [winner, setWinner] = useState(null);
 
-    const [board, setBoard] = useState(initialBoard);
-    const [currentPlayer, setCurrentPlayer] = useState("X");
-    const [winner, setWinner] = useState(null);
-
-    const handleClick = (row, col) => {
-        if (!board[row][col] && !winner) {
-            const newBoard = [...board];
-            newBoard[row][col] = currentPlayer;
-            setBoard(newBoard);
-
-            if (checkWinner(row, col)) {
-                setWinner(currentPlayer);
-            } else {
-                setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
-            }
-        }
-    };
-
-    const checkWinner = (row, col) => {
-        // Check row
-        if (
-            board[row][0] === currentPlayer &&
-            board[row][1] === currentPlayer &&
-            board[row][2] === currentPlayer
-        ) {
-            return true;
-        }
-
-        // Check column
-        if (
-            board[0][col] === currentPlayer &&
-            board[1][col] === currentPlayer &&
-            board[2][col] === currentPlayer
-        ) {
-            return true;
-        }
-
-        // Check diagonals
-        if (
-            (row === col || row + col === 2) &&
-            board[0][0] === currentPlayer &&
-            board[1][1] === currentPlayer &&
-            board[2][2] === currentPlayer
-        ) {
-            return true;
-        }
-
-        if (
-            (row === 0 && col === 2) ||
-            (row === 2 && col === 0) ||
-            (row === 1 && col === 1)
-        ) {
-            if (
-                board[0][2] === currentPlayer &&
-                board[1][1] === currentPlayer &&
-                board[2][0] === currentPlayer
-            ) {
-                return true;
-            }
-        }
-
-        return false;
-    };
-
-    const resetGame = () => {
-        setBoard(initialBoard);
-        setCurrentPlayer("X");
+  useEffect(() => {
+    if (socket) {
+      socket.on("updateBoard", (newBoard) => {
+        setBoard(newBoard);
+      });
+  
+      socket.on("updatePlayer", (newPlayerIndex) => {
+        setCurrentPlayerIndex(newPlayerIndex);
+      });
+  
+      socket.on("gameOver", (result) => {
+        setWinner(result);
+      });
+  
+      socket.on("resetGame", () => {
+        setBoard(Array(3).fill(Array(3).fill("")));
+        setCurrentPlayerIndex(null);
         setWinner(null);
-    };
+      });
+  
+      socket.on("startGame", ({ board, currentPlayerIndex }) => {
+        setBoard(board);
+        setCurrentPlayerIndex(currentPlayerIndex);
+      });
+    }
+  }, [socket]);
 
-    return (
-        <div>
-            <div>
-                {winner ? (
-                    <p>¡Ganador: {winner}!</p>
-                ) : (
-                    <p>Turno del jugador: {currentPlayer}</p>
-                )}
-            </div>
-            <div>
-                {board.map((row, i) => (
-                    <div key={i} style={{ display: "flex" }}>
-                        {row.map((cell, j) => (
-                            <button
-                                key={j}
-                                onClick={() => handleClick(i, j)}
-                                style={{
-                                    width: "50px",
-                                    height: "50px",
-                                    fontSize: "20px",
-                                    border: "1px solid #ccc",
-                                    backgroundColor: cell === "" ? "white" : cell === "X" ? "#ffcccb" : "#b3e6b3",
-                                    margin: "5px",
-                                }}
-                            >
-                                {cell}
-                            </button>
-                        ))}
-                    </div>
-                ))}
-            </div>
-            <button onClick={resetGame}>Reiniciar Juego</button>
-        </div>
-    );
+  const handleClick = (row, col) => {
+    if (!board[row][col] && !winner && socket && currentPlayerIndex !== null) {
+      const newBoard = board.map(row => [...row]);
+      newBoard[row][col] = currentPlayerIndex === 0 ? "X" : "O";
+      setBoard(newBoard);
+
+      socket.emit("makeMove", { roomId, move: newBoard });
+
+      // Verificar si hay un ganador después de cada movimiento
+      if (checkWinner(row, col)) {
+        socket.emit("gameOver", { roomId, winner: currentPlayerIndex === 0 ? "X" : "O" });
+      } else {
+        // Cambiar automáticamente al siguiente jugador en el servidor
+        const newPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
+        socket.emit("updatePlayer", { roomId, newPlayerIndex });
+      }
+    }
+  };
+
+  const checkWinner = (row, col) => {
+    const currentPlayer = currentPlayerIndex === 0 ? "X" : "O";
+    if (
+      board[row].every(cell => cell === currentPlayer)
+    ) {
+      return true;
+    }
+    if (
+      board.every(row => row[col] === currentPlayer)
+    ) {
+      return true;
+    }
+    if (
+      row === col &&
+      board.every((row, i) => row[i] === currentPlayer)
+    ) {
+      return true;
+    }
+    if (
+      row + col === board.length - 1 &&
+      board.every((row, i) => row[board.length - 1 - i] === currentPlayer)
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
+  const resetGame = () => {
+    socket.emit("resetGame", roomId);
+  };
+
+  const idSala = localStorage.getItem("idRoom");
+
+  return (
+    <div>
+      <div>El código de la sala es {idSala}</div>
+      <div>
+        {winner ? (
+          <p>¡Ganador: {winner}!</p>
+        ) : currentPlayerIndex !== null ? (
+          <p>Turno del jugador: {currentPlayerIndex === 0 ? "X" : "O"}</p>
+        ) : (
+          <p>Esperando a que el otro jugador se una...</p>
+        )}
+      </div>
+      <div>
+        {board.map((row, i) => (
+          <div key={i} style={{ display: "flex" }}>
+            {row.map((cell, j) => (
+              <button
+                key={j}
+                onClick={() => handleClick(i, j)}
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  fontSize: "20px",
+                  border: "1px solid #ccc",
+                  backgroundColor: cell === "" ? "white" : cell === "X" ? "#ffcccb" : "#b3e6b3",
+                  margin: "5px",
+                }}
+              >
+                {cell}
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+      <button onClick={resetGame}>Reiniciar Juego</button>
+    </div>
+  );
 };
 
-export default Board;
+Oxox.propTypes = {
+  socket: PropTypes.object.isRequired,
+  roomId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
+
+export default Oxox;

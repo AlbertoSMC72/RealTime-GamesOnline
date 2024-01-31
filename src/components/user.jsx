@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const LoginCreateAccount = () => {
-    const [name, setname] = useState("");
-    const [password, setPassword] = useState("");
+    const [nombre_usuario, setnombre_usuario] = useState("");
+    const [contrasena, setcontrasena] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isCreatingAccount] = useState(false);
 
@@ -21,14 +21,14 @@ const LoginCreateAccount = () => {
 
     const handleLogin = async () => {
         try {
-            const response = await fetch("http://localhost:8080/auth/login/", {
+            const response = await fetch("http://localhost:3000/app/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    name,
-                    password,
+                    nombre_usuario,
+                    contrasena,
                 }),
             });
             if (response.status === 200) {
@@ -46,14 +46,14 @@ const LoginCreateAccount = () => {
 
     const handleCreateAccount = async () => {
         try {
-            const response = await fetch("http://localhost:8080/user/", {
+            const response = await fetch("http://localhost:3000/app/user/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    name,
-                    password,
+                    nombre_usuario,
+                    contrasena,
                 }),
             });
             if (response.status === 201) {
@@ -84,14 +84,14 @@ const LoginCreateAccount = () => {
                                 <input
                                     type="text"
                                     placeholder="Usuario"
-                                    value={name}
-                                    onChange={(e) => setname(e.target.value)}
+                                    value={nombre_usuario}
+                                    onChange={(e) => setnombre_usuario(e.target.value)}
                                 />
                                 <input
-                                    type="password"
+                                    type="contrasena"
                                     placeholder="Contraseña"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    value={contrasena}
+                                    onChange={(e) => setcontrasena(e.target.value)}
                                 />
                             </div>
                             <button onClick={handleLogin}>Iniciar sesión</button>
