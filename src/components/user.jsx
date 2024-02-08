@@ -15,9 +15,6 @@ const LoginCreateAccount = () => {
         }
     }, [isLoggedIn, navigate]);
 
-    const saveTokenToLocalStorage = (token) => {
-        localStorage.setItem("token", token);
-    };
 
     const handleLogin = async () => {
         try {
@@ -33,7 +30,7 @@ const LoginCreateAccount = () => {
             });
             if (response.status === 200) {
                 const data = await response.json();
-                saveTokenToLocalStorage(data.token);
+                localStorage.setItem("token", data.token);
                 localStorage.setItem("usuario", nombre_usuario);
                 setIsLoggedIn(true);
             }
