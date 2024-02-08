@@ -34,10 +34,8 @@ const LoginCreateAccount = () => {
             if (response.status === 200) {
                 const data = await response.json();
                 saveTokenToLocalStorage(data.token);
+                localStorage.setItem("usuario", nombre_usuario);
                 setIsLoggedIn(true);
-                
-/*                 socket.auth = { token: data.token };
-                socket.connect(); */
             }
         } catch (error) {
             console.error(error);

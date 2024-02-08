@@ -25,7 +25,7 @@ function Jugadores() {
     const filteredJugadores = jugadores.filter(jugador => jugador.record > 0).sort((a, b) => b.record - a.record);
 
     return (
-        <div style={{ textAlign: "center", paddingLeft: "15px", paddingRight: "15px" }}>
+        <div style={{ textAlign: "center", paddingLeft: "15px", paddingRight: "15px" , backgroundColor:"purple", justifyContent: "center" }}>
             <h2>Top Jugadores</h2>
             <table>
                 <thead>
@@ -34,7 +34,7 @@ function Jugadores() {
                         <th>Récord</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody >
                     {Array.isArray(filteredJugadores) && filteredJugadores.map((jugador) => (
                         <tr key={jugador.id_usuario}>
                             <td>{jugador.nombre_usuario}</td>
