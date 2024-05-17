@@ -1,0 +1,95 @@
+.campuslink-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    background-color: #d3cfcf;
+    border-radius: 5px;
+    width: 30rem;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  .separacion{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5%;
+    width: 80%;
+  }
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .form-container input {
+    width: 300px;
+    height: 40px;
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  .logo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 4%;
+  }
+  a{
+    
+    list-style: none;
+  }
+  h4{
+    width: 100%;
+    color: #828080;
+    display: flex;
+    align-items: left;
+  }
+  .form-container button {
+    width: 320px;
+    height: 45px;
+    background-color: #595959;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+  }
+  
+  .google-button {
+    width: 320px;
+    height: 45px;
+    background-color: #ffffff;
+    color: #000000;
+    border: none;
+    border-radius: 45px;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  hr {
+    width: 320px;
+    margin: 20px 0;
+  }
+
+  button:hover{
+    background-color: #989898;
+  }
+
+  .google-button:hover {
+    background-color: #e4e1e1ea;
+  }
+
+  p {
+    font-size: 10px;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  h4 {
+    font-size: 13px;
+    font-family: 'Roboto', sans-serif;
+  }
